@@ -4,11 +4,13 @@ from google.adk.agents.llm_agent import Agent
 from google.adk.models.lite_llm import LiteLlm
 
 from .configuration import MODELO, URL_OLLAMA
-from .tools.search import buscar_productos_competencia
-from .tools.coincidense import verificar_coincidencia
-from .tools.comparation import comparar_precios
-from .tools.promotions import detectar_promocion
-from .configuration import INSTRUCCIONES
+from .instructions import INSTRUCCIONES
+from .tools import (
+    buscar_productos_competencia,
+    comparar_precios,
+    detectar_promocion,
+    verificar_coincidencia,
+)
 
 os.environ["OLLAMA_API_BASE"] = URL_OLLAMA
 
