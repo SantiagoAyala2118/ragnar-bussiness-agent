@@ -1,5 +1,5 @@
 from ..configuration import PATRONES_PROMOCION
-from ..utils.responses import respuesta_error, respuesta_ok, respuesta_vacia
+from ..utils import respuesta_error, respuesta_ok, respuesta_vacia
 
 
 def detectar_promocion(texto: str = "", precio_regular: float = 0, precio_actual: float = 0) -> dict:

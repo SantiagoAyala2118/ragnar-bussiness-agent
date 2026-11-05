@@ -3,8 +3,7 @@ from datetime import datetime
 from ddgs import DDGS
 
 from ..configuration import MAX_RESULTADOS_PERMITIDOS, REGION_BUSQUEDA, SUPERMERCADOS
-from ..utils.responses import respuesta_error, respuesta_ok, respuesta_vacia
-from ..utils.text import recortar_texto
+from ..utils import recortar_texto, respuesta_error, respuesta_ok, respuesta_vacia
 
 
 def buscar_productos_competencia(producto: str, supermercado: str, max_resultados: int = 5) -> dict:

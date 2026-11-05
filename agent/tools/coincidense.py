@@ -1,7 +1,5 @@
 from ..configuration import VARIANTES
-from ..utils.responses import respuesta_error, respuesta_ok
-from ..utils.text import simplificar_texto
-from ..utils.units import extraer_contenido, normalizar_unidad
+from ..utils import extraer_contenido, normalizar_unidad, respuesta_error, respuesta_ok, simplificar_texto
 
 
 def verificar_coincidencia(

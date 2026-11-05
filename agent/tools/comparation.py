@@ -1,6 +1,5 @@
 from ..configuration import CONVERSIONES, DIFERENCIA_SIGNIFICATIVA, UNIDADES_REFERENCIA
-from ..utils.responses import respuesta_error, respuesta_ok
-from ..utils.units import normalizar_unidad
+from ..utils import normalizar_unidad, respuesta_error, respuesta_ok
 
 
 def comparar_precios(
