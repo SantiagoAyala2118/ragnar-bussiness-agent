@@ -1,3 +1,5 @@
+import re
+
 from ..configuration import CATEGORIAS, MAX_RESULTADOS_CATALOGO
 from ..utils import buscar_producto_por_id, cargar_catalogo, respuesta_error, respuesta_ok, respuesta_vacia, simplificar_texto
 
@@ -35,14 +37,15 @@ def consultar_catalogo(texto: str = "", categoria: str = "", producto_id: str = 
             return respuesta_vacia(f"No existe el producto '{producto_id}' en el catalogo.")
         return respuesta_ok(cantidad=1, productos=[producto])
 
-    # 3. Filtrar por categoria y por palabras (todas las palabras deben aparecer)
+    # 3. Filtrar por categoria y por palabras completas (todas deben aparecer: "500" no coincide con "1500")
     resultados = catalogo
     if categoria.strip():
         resultados = resultados[resultados["categoria"] == categorias_validas[simplificar_texto(categoria)]]
     if texto.strip():
         descripcion = (resultados["producto"] + " " + resultados["marca"] + " " + resultados["presentacion"]).map(simplificar_texto)
         for palabra in simplificar_texto(texto).split():
-            resultados = resultados[descripcion.str.contains(palabra, regex=False)]
+            patron = rf"\b{re.escape(palabra)}"  # la palabra debe empezar en un limite: "yerb" sigue encontrando "yerba"
+            resultados = resultados[descripcion.str.contains(patron, regex=True)]
             descripcion = descripcion[resultados.index]
 
     # 4. Responder
