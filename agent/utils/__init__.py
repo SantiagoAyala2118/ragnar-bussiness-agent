@@ -1,4 +1,5 @@
 from .catalog import buscar_producto_por_id, cargar_catalogo
+from .numbers import esta_verificado, extraer_montos, recolectar_numeros
 from .reports import armar_informe
 from .responses import respuesta_error, respuesta_ok, respuesta_vacia
 from .scraper import (
@@ -32,4 +33,7 @@ __all__ = [
     "armar_informe",
     "obtener_base_vectorial",
     "dividir_en_fragmentos",
+    "recolectar_numeros",
+    "extraer_montos",
+    "esta_verificado",
 ]
