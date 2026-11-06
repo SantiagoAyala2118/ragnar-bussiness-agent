@@ -1,22 +1,47 @@
 import re
+from pathlib import Path
+
+# --- Rutas ---
+CARPETA_AGENTE = Path(__file__).resolve().parent
+RUTA_CATALOGO = CARPETA_AGENTE / "data" / "ragnar_catalog.csv"
+CARPETA_INFORMES = CARPETA_AGENTE / "reports"
+CARPETA_VECTOR_STORE = CARPETA_AGENTE / "vector_store"
 
 # --- Modelo ---
 URL_OLLAMA = "http://localhost:11434"
 MODELO = "ollama_chat/gemma4:31b-cloud"
 
+# --- Catalogo de Ragnar ---
+MAX_RESULTADOS_CATALOGO = 20
+CATEGORIAS = ["Alimentos", "Bebidas", "Limpieza", "Higiene personal", "Hogar"]
+
 # --- Busqueda en la competencia ---
-# Lista cerrada de competidores: el agente solo puede buscar en estos sitios
+# Lista cerrada de competidores: el agente solo puede consultar estos sitios
 SUPERMERCADOS = {
-    "carrefour": "carrefour.com.ar",
-    "jumbo": "jumbo.com.ar",
-    "disco": "disco.com.ar",
-    "vea": "vea.com.ar",
-    "dia": "supermercadosdia.com.ar",
-    "changomas": "masonline.com.ar",
+    "carrefour": "www.carrefour.com.ar",
+    "jumbo": "www.jumbo.com.ar",
+    "disco": "www.disco.com.ar",
+    "vea": "www.vea.com.ar",
+    "dia": "diaonline.supermercadosdia.com.ar",
+    "changomas": "www.masonline.com.ar",
 }
 REGION_BUSQUEDA = "ar-es"
 MAX_RESULTADOS_PERMITIDOS = 10
 LARGO_MAXIMO_TEXTO = 300  # recorta textos externos para limitar contenido malicioso o innecesario
+
+# --- Scraper (consultas a los sitios de la competencia) ---
+# El agente se identifica honestamente y respeta el robots.txt de cada sitio
+USER_AGENT = "RagnarPriceAgent/1.0 (proyecto academico; comparacion de precios)"
+TIEMPO_ESPERA = 15  # segundos maximos de espera por respuesta
+PAUSA_ENTRE_CONSULTAS = 1.0  # segundos entre consultas, para no sobrecargar los sitios
+RUTA_API_PRODUCTOS = "/api/catalog_system/pub/products/search"  # API publica de catalogo (plataforma VTEX)
+MONEDA_COMPETENCIA = "ARS"
+
+# --- RAG (historial de investigaciones) ---
+MODELO_EMBEDDINGS = "nomic-embed-text"
+COLECCION_INVESTIGACIONES = "investigaciones"
+TAMANO_FRAGMENTO = 1000
+SOLAPAMIENTO_FRAGMENTO = 200
 
 # --- Unidades de medida ---
 # Cada unidad aceptada se convierte a una unidad base: (unidad_base, factor de conversion)
