@@ -58,6 +58,7 @@ def comparar_precios(
         precio_por_unidad_ragnar=round(precio_unitario_ragnar, 2),
         precio_por_unidad_competidor=round(precio_unitario_competidor, 2),
         diferencia_absoluta_por_unidad=round(diferencia_absoluta, 2),
+        diferencia_absoluta_precio=round(precio_ragnar - precio_competidor, 2),
         diferencia_porcentual=round(diferencia_porcentual, 2),
         posicion=posicion,
         diferencia_significativa=abs(diferencia_porcentual) >= DIFERENCIA_SIGNIFICATIVA,
