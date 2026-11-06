@@ -76,3 +76,7 @@ PATRONES_PROMOCION = {
     "descuento": re.compile(r"(\d+)\s*%\s*(off|de descuento|dto)", re.IGNORECASE),
     "oferta": re.compile(r"\b(oferta|promo|promocion|precio especial|liquidacion)\b", re.IGNORECASE),
 }
+
+# --- Guard (filtro de entrada y salida del agente) ---
+MAX_CARACTERES_ENTRADA = 1000  # mensajes mas largos se rechazan (suelen esconder instrucciones)
+MAX_CARACTERES_RESPUESTA = 8000  # respuestas mas largas se recortan
