@@ -4,6 +4,7 @@ from google.adk.agents.llm_agent import Agent
 from google.adk.models.lite_llm import LiteLlm
 
 from .configuration import MODELO, URL_OLLAMA
+from .guard import filtrar_entrada, registrar_datos_herramienta, revisar_respuesta
 from .instructions import INSTRUCCIONES
 from .tools import (
     buscar_productos_competencia,
@@ -39,4 +40,8 @@ root_agent = Agent(
         guardar_investigacion,
         consultar_investigaciones,
     ],
+    # Guard: filtra la entrada antes del modelo y revisa la salida antes del usuario
+    before_agent_callback=filtrar_entrada,
+    after_tool_callback=registrar_datos_herramienta,
+    after_model_callback=revisar_respuesta,
 )
