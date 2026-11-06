@@ -1,15 +1,50 @@
 from datetime import datetime
 
+import requests
 from ddgs import DDGS
 
 from ..configuration import MAX_RESULTADOS_PERMITIDOS, REGION_BUSQUEDA, SUPERMERCADOS
-from ..utils import recortar_texto, respuesta_error, respuesta_ok, respuesta_vacia
+from ..utils import consultar_json, puede_consultarse, recortar_texto, respuesta_error, respuesta_ok, respuesta_vacia, url_api_por_texto
+
+
+def buscar_con_ddgs(producto: str, dominio: str, max_resultados: int) -> list[dict]:
+    """
+    Busca el producto en internet con DuckDuckGo, limitado al sitio del supermercado.
+    Devuelve una lista de {titulo, url} solo con paginas de producto. Lista vacia si no hay resultados.
+    """
+    try:
+        resultados = DDGS().text(f"{producto} site:{dominio}", region=REGION_BUSQUEDA, max_results=max_resultados)
+    except Exception as e:
+        print("Busqueda en DDGS sin resultados o con error:", e)
+        return []
+    return [
+        {"titulo": r.get("title", ""), "url": r.get("href", "")}
+        for r in resultados
+        if dominio in r.get("href", "") and r.get("href", "").rstrip("/").endswith("/p")
+    ]
+
+
+def buscar_en_sitio(producto: str, dominio: str, max_resultados: int) -> list[dict]:
+    """
+    Busca el producto con el buscador publico del propio sitio (respaldo si DDGS no encuentra nada).
+    Respeta el robots.txt. Devuelve una lista de {titulo, url}.
+    """
+    url = url_api_por_texto(dominio, producto, max_resultados)
+    try:
+        if not puede_consultarse(url):
+            return []
+        productos = consultar_json(url)
+    except (requests.exceptions.RequestException, ValueError) as e:
+        print("Error interno al buscar en el sitio", e)
+        return []
+    return [{"titulo": p.get("productName", ""), "url": p.get("link", "")} for p in productos]
 
 
 def buscar_productos_competencia(producto: str, supermercado: str, max_resultados: int = 5) -> dict:
     """
     Herramienta para buscar un producto en el sitio web de un supermercado competidor.
-    Devuelve titulo, enlace, fragmento de texto y fecha de consulta de cada resultado.
+    Devuelve titulo, URL de la pagina del producto, origen de la busqueda y fecha de consulta.
+    No devuelve precios: para eso usa obtener_precio_competidor con la URL.
     Utilizala una vez por cada supermercado que quieras consultar.
     Args:
         producto: str -> Producto a buscar, con marca y presentacion (ej: "yerba Playadito 1 kg").
@@ -25,32 +60,24 @@ def buscar_productos_competencia(producto: str, supermercado: str, max_resultado
     if not 1 <= max_resultados <= MAX_RESULTADOS_PERMITIDOS:
         return respuesta_error(f"max_resultados debe estar entre 1 y {MAX_RESULTADOS_PERMITIDOS}.")
 
-    # 2. Buscar solo dentro del sitio del supermercado
+    # 2. Buscar: primero en internet (DDGS) y, si no hay resultados, en el buscador del sitio
     dominio = SUPERMERCADOS[supermercado]
-    sin_resultados = f"No se encontro '{producto}' en {supermercado}."
-    try:
-        resultados = DDGS().text(f"{producto.strip()} site:{dominio}", region=REGION_BUSQUEDA, max_results=max_resultados)
-    except Exception as e:
-        if "No results found" in str(e):  # ddgs lanza una excepcion cuando no hay resultados
-            return respuesta_vacia(sin_resultados)
-        print("Error interno al utilizar la herramienta", e)
-        return respuesta_error(f"No se pudo realizar la busqueda: {e}")
+    resultados, origen = buscar_con_ddgs(producto.strip(), dominio, max_resultados), "ddgs"
+    if not resultados:
+        resultados, origen = buscar_en_sitio(producto.strip(), dominio, max_resultados), "buscador del sitio"
 
-    # 3. Armar resultados (descarta los que no son del sitio permitido)
+    # 3. Responder
+    if not resultados:
+        return respuesta_vacia(f"No se encontro '{producto}' en {supermercado}.")
     fecha_consulta = datetime.now().strftime("%Y-%m-%d %H:%M")
     productos = [
         {
             "supermercado": supermercado,
-            "titulo": recortar_texto(resultado.get("title", "")),
-            "url": resultado.get("href", ""),
-            "fragmento": recortar_texto(resultado.get("body", "")),
+            "titulo": recortar_texto(r["titulo"]),
+            "url": r["url"],
+            "origen": origen,
             "fecha_consulta": fecha_consulta,
         }
-        for resultado in resultados
-        if dominio in resultado.get("href", "")
+        for r in resultados
     ]
-
-    # 4. Responder
-    if not productos:
-        return respuesta_vacia(sin_resultados)
     return respuesta_ok(cantidad=len(productos), productos=productos)
