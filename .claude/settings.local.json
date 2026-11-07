@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(python -c \"import pypdf,sys; r=pypdf.PdfReader\\(sys.argv[1]\\); print\\('\\\\n'.join\\(p.extract_text\\(\\) for p in r.pages\\)\\)\" \"C:\\\\Users\\\\Santiago Ayala\\\\Desktop\\\\INSTITUTO\\\\MATERIAS\\\\2do CUATRI\\\\TALLER COMPLEMENTARIO DE IA\\\\Problemática 04_ Agente inteligente de investigación y comparación de precios.pdf\")",
-      "PowerShell(pip install --quiet pypdf 2>$null)",
-      "PowerShell($t=\"C:\\\\Users\\\\SANTIA~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\eb6b1911bbe6c428\\\\c0d9e06a-78f6-4a3d-af81-dd8d468a9940\\\\scratchpad\\\\pylib\"; python -m pip install --quiet --target $t pypdf; $env:PYTHONPATH=$t; python -c \"import pypdf,sys; r=pypdf.PdfReader\\(sys.argv[1]\\); print\\('\\\\n'.join\\(p.extract_text\\(\\) for p in r.pages\\)\\)\" \"C:\\\\Users\\\\Santiago Ayala\\\\Desktop\\\\INSTITUTO\\\\MATERIAS\\\\2do CUATRI\\\\TALLER COMPLEMENTARIO DE IA\\\\Problemática 04_ Agente inteligente de investigación y comparación de precios.pdf\")"
-    ]
-  }
-}

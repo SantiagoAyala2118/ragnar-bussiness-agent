@@ -4,3 +4,4 @@ __pycache__/
 node_modules/
 agent/reports/
 agent/vector_store/
+.claude/
