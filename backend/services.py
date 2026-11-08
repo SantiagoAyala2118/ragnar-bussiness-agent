@@ -109,14 +109,17 @@ class AgentService:
                 "No se pudo conectar con Ollama. "
                 "Verificá que esté corriendo (ollama serve) y que el modelo esté disponible."
             )
+        # El detalle tecnico queda solo en el log: el usuario recibe un mensaje fijo
         except (ConnectionError, OSError) as exc:
-            logger.error("Chat [%s]: error de conexión: %s", session_id[:8], exc)
+            logger.exception("Chat [%s]: error de conexión", session_id[:8])
             raise AgentConnectionError(
-                f"Error de conexión con el servicio del modelo: {exc}"
-            )
+                "No se pudo conectar con el servicio del modelo. Volvé a intentar en unos segundos."
+            ) from exc
         except Exception as exc:
             logger.exception("Chat [%s]: error inesperado", session_id[:8])
-            raise AgentError(f"Error del agente: {exc}") from exc
+            raise AgentError(
+                "Ocurrió un error inesperado al procesar la consulta. Volvé a intentar."
+            ) from exc
 
         reply = "\n".join(reply_parts).strip() or "(El agente no devolvió respuesta)"
 
