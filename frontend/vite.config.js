@@ -1,10 +1,11 @@
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 // Ports: frontend 3000, backend 8080 (adk web keeps 8000 free)
 // The proxy forwards /api to the FastAPI backend
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
     port: 3000,
     strictPort: true,

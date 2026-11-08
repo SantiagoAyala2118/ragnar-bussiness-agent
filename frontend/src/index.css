@@ -1,41 +1,182 @@
-:root {
-  --bg: #f5f6f8;
-  --panel: #ffffff;
-  --text: #1c1f24;
-  --muted: #6b7280;
-  --border: #e3e6ea;
-  --accent: #c8102e;
-  --accent-text: #ffffff;
-  --agent-bg: #ffffff;
-  --code-bg: #f0f1f3;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: var(--text);
-  background: var(--bg);
+@import "tailwindcss";
+
+/* Paleta Ragnar: bosque nordico + cuero + rojo del logo */
+@theme {
+  --color-base: #101212;
+  --color-noche: #152121;
+  --color-musgo: #1a2519;
+  --color-bosque: #2a4737;
+  --color-pino: #324429;
+  --color-petroleo: #2f4d50;
+  --color-niebla: #558082;
+  --color-hielo: #9abcc4;
+  --color-cuero: #674736;
+  --color-corteza: #35261f;
+  --color-ambar: #c9a27e;
+  --color-sangre: #cd3c3c;
+  --color-crema: #ede6d6;
+
+  --font-titulo: "Cinzel", Georgia, serif;
+  --font-texto: "Inter", system-ui, sans-serif;
+  --font-runa: "Noto Sans Runic", "Segoe UI Historic", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14161a;
-    --panel: #1c1f24;
-    --text: #e8eaed;
-    --muted: #9aa0a6;
-    --border: #2c3036;
-    --agent-bg: #22262c;
-    --code-bg: #2a2e35;
-  }
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  margin: 0;
-  height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--bg);
+  margin: 0;
+  background: var(--color-base);
+  color: var(--color-crema);
+  font-family: var(--font-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-cuero);
+  color: var(--color-crema);
+}
+
+/* Scrollbar discreta para el panel del chat */
+.scroll-fino {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-petroleo) transparent;
+}
+
+/* Aparicion escalonada de las tarjetas (ver useReveal) */
+.revelar {
+  opacity: 0;
+  transform: translateY(48px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.revelar.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Indicador de carga del agente */
+@keyframes latido {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.punto-latido {
+  animation: latido 1.2s infinite ease-in-out;
+}
+
+/* Markdown de las respuestas del agente */
+.respuesta-agente {
+  line-height: 1.65;
+  font-size: 0.95rem;
+}
+.respuesta-agente > * + * {
+  margin-top: 0.75rem;
+}
+.respuesta-agente h1,
+.respuesta-agente h2,
+.respuesta-agente h3 {
+  font-family: var(--font-titulo);
+  color: var(--color-ambar);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+.respuesta-agente h1 {
+  font-size: 1.25rem;
+}
+.respuesta-agente h2 {
+  font-size: 1.1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-petroleo) 60%, transparent);
+}
+.respuesta-agente h3 {
+  font-size: 1rem;
+}
+.respuesta-agente strong {
+  color: var(--color-crema);
+  font-weight: 600;
+}
+.respuesta-agente a {
+  color: var(--color-hielo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  word-break: break-all;
+}
+.respuesta-agente ul,
+.respuesta-agente ol {
+  padding-left: 1.25rem;
+}
+.respuesta-agente ul {
+  list-style: square;
+}
+.respuesta-agente ol {
+  list-style: decimal;
+}
+.respuesta-agente li::marker {
+  color: var(--color-ambar);
+}
+.respuesta-agente code {
+  background: var(--color-noche);
+  border: 1px solid var(--color-petroleo);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.85em;
+}
+.respuesta-agente hr {
+  border: 0;
+  border-top: 1px solid var(--color-petroleo);
+}
+.respuesta-agente blockquote {
+  border-left: 3px solid var(--color-cuero);
+  padding-left: 0.75rem;
+  color: var(--color-hielo);
+}
+.respuesta-agente .tabla-contenedor {
+  overflow-x: auto;
+  border: 1px solid var(--color-petroleo);
+  border-radius: 10px;
+}
+.respuesta-agente table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.respuesta-agente th {
+  background: var(--color-petroleo);
+  color: var(--color-crema);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  white-space: nowrap;
+}
+.respuesta-agente td {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-petroleo) 55%, transparent);
+}
+.respuesta-agente tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--color-musgo) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .revelar {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .punto-latido {
+    animation: none;
+  }
 }

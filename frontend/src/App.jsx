@@ -1,97 +1,38 @@
-import { useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import { useRef, useState } from 'react'
 import { borrarSesion, enviarMensaje } from './api'
-import './App.css'
-
-// Products and stores that exist in the catalog and allow automated queries
-const SUGERENCIAS = [
-  'Compará la yerba Playadito de 500 g con Día y Changomás',
-  '¿Qué gaseosas Coca-Cola vende Ragnar?',
-  '¿Qué se concluyó sobre la yerba en investigaciones anteriores?',
-]
-
-const NOMBRES_HERRAMIENTAS = {
-  consultar_catalogo: 'Consulta del catálogo de Ragnar',
-  buscar_productos_competencia: 'Búsqueda en competencia',
-  obtener_precio_competidor: 'Precio del competidor',
-  verificar_coincidencia: 'Verificación de coincidencia',
-  comparar_precios: 'Comparación de precios',
-  detectar_promocion: 'Detección de promoción',
-  registrar_resultado: 'Registro de resultado',
-  reiniciar_investigacion: 'Nueva investigación',
-  generar_informe: 'Generación de informe',
-  guardar_investigacion: 'Guardado en el historial',
-  consultar_investigaciones: 'Consulta del historial',
-}
-
-function Mensaje({ mensaje }) {
-  const { role, text, toolCalls, error } = mensaje
-  return (
-    <div className={`mensaje ${role} ${error ? 'error' : ''}`}>
-      <div className="burbuja">
-        {role === 'agent' ? (
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              a: (props) => <a {...props} target="_blank" rel="noreferrer" />,
-            }}
-          >
-            {text}
-          </ReactMarkdown>
-        ) : (
-          <p>{text}</p>
-        )}
-        {toolCalls?.length > 0 && (
-          <details className="herramientas">
-            <summary>{toolCalls.length} herramienta(s) usada(s)</summary>
-            <ul>
-              {toolCalls.map((t, i) => (
-                <li key={i}>
-                  <strong>{NOMBRES_HERRAMIENTAS[t.name] || t.name}</strong>
-                  <code>{JSON.stringify(t.args)}</code>
-                </li>
-              ))}
-            </ul>
-          </details>
-        )}
-      </div>
-    </div>
-  )
-}
+import Chat from './components/Chat'
+import Fondo from './components/Fondo'
+import Footer from './components/Footer'
+import Funciones from './components/Funciones'
+import Hero from './components/Hero'
+import Navbar from './components/Navbar'
 
 export default function App() {
   const [mensajes, setMensajes] = useState([])
-  const [input, setInput] = useState('')
   const [cargando, setCargando] = useState(false)
   const [sessionId, setSessionId] = useState(null)
-  const finRef = useRef(null)
-
-  useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [mensajes, cargando])
+  const chatRef = useRef(null)
 
   async function enviar(texto) {
     const message = texto.trim()
     if (!message || cargando) return
-    setInput('')
     setMensajes((m) => [...m, { role: 'user', text: message }])
     setCargando(true)
     try {
       const data = await enviarMensaje(message, sessionId)
       setSessionId(data.session_id)
-      setMensajes((m) => [
-        ...m,
-        { role: 'agent', text: data.reply, toolCalls: data.tool_calls },
-      ])
+      setMensajes((m) => [...m, { role: 'agent', text: data.reply, toolCalls: data.tool_calls }])
     } catch (err) {
-      setMensajes((m) => [
-        ...m,
-        { role: 'agent', text: `⚠️ ${err.message}`, error: true },
-      ])
+      setMensajes((m) => [...m, { role: 'agent', text: `⚠️ ${err.message}`, error: true }])
     } finally {
       setCargando(false)
     }
+  }
+
+  // Atajos de las tarjetas: bajan hasta el chat y envian la consulta
+  function usarAtajo(texto) {
+    chatRef.current?.scrollIntoView({ behavior: 'smooth' })
+    enviar(texto)
   }
 
   function nuevaConversacion() {
@@ -100,73 +41,22 @@ export default function App() {
     setMensajes([])
   }
 
-  function onKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      enviar(input)
-    }
-  }
-
   return (
-    <div className="app">
-      <header>
-        <div>
-          <h1>Ragnar S.A.</h1>
-          <span>Agente de inteligencia de precios</span>
-        </div>
-        <button className="secundario" onClick={nuevaConversacion} disabled={cargando}>
-          Nueva conversación
-        </button>
-      </header>
-
-      <main className="chat">
-        {mensajes.length === 0 && (
-          <div className="vacio">
-            <h2>¿Qué producto querés comparar?</h2>
-            <p>Busco precios en Jumbo, Disco, Vea, Día y Changomás.</p>
-            <div className="sugerencias">
-              {SUGERENCIAS.map((s) => (
-                <button key={s} onClick={() => enviar(s)}>
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        {mensajes.map((m, i) => (
-          <Mensaje key={i} mensaje={m} />
-        ))}
-        {cargando && (
-          <div className="mensaje agent">
-            <div className="burbuja escribiendo" aria-label="El agente está pensando">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-        )}
-        <div ref={finRef} />
-      </main>
-
-      <form
-        className="entrada"
-        onSubmit={(e) => {
-          e.preventDefault()
-          enviar(input)
-        }}
-      >
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder="Escribí tu consulta… (Enter envía, Shift+Enter nueva línea)"
-          rows={1}
-          disabled={cargando}
+    <>
+      <Fondo />
+      <Navbar />
+      <main>
+        <Hero />
+        <Funciones onAtajo={usarAtajo} />
+        <Chat
+          ref={chatRef}
+          mensajes={mensajes}
+          cargando={cargando}
+          onEnviar={enviar}
+          onNuevaConversacion={nuevaConversacion}
         />
-        <button type="submit" disabled={cargando || !input.trim()}>
-          Enviar
-        </button>
-      </form>
-    </div>
+      </main>
+      <Footer />
+    </>
   )
 }
