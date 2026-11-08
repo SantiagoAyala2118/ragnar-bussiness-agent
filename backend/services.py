@@ -121,7 +121,8 @@ class AgentService:
                 "Ocurrió un error inesperado al procesar la consulta. Volvé a intentar."
             ) from exc
 
-        reply = "\n".join(reply_parts).strip() or "(El agente no devolvió respuesta)"
+        # Linea en blanco entre bloques para que el markdown no se mezcle
+        reply = "\n\n".join(reply_parts).strip() or "(El agente no devolvió respuesta)"
 
         logger.info(
             "Chat [%s] → %d chars, %d tool(s)",
@@ -151,10 +152,16 @@ class AgentService:
                 )
                 logger.debug("  Tool: %s(%s)", call.name, call.args)
 
-            if event.is_final_response() and event.content and event.content.parts:
-                reply_parts.extend(
-                    p.text for p in event.content.parts if p.text
-                )
+            # Se junta el texto de TODAS las respuestas del agente, no solo la final:
+            # el modelo suele escribir el informe y en el mismo paso llamar a otra
+            # herramienta (ej: guardar_investigacion), y ese texto quedaba afuera.
+            if event.author == "user" or event.partial or not event.content:
+                continue
+            texto = "".join(
+                p.text for p in (event.content.parts or []) if p.text and not p.thought
+            ).strip()
+            if texto:
+                reply_parts.append(texto)
 
     # ------------------------------------------------------------------
     # Sesiones
