@@ -4,17 +4,25 @@ import remarkGfm from 'remark-gfm'
 import { borrarSesion, enviarMensaje } from './api'
 import './App.css'
 
+// Products and stores that exist in the catalog and allow automated queries
 const SUGERENCIAS = [
-  'Buscá el precio de Coca-Cola 2,25 L en Carrefour y Jumbo',
-  '¿Hay promociones de yerba Playadito 1 kg en Día?',
-  'Compará aceite Natura 1,5 L en Vea y Changomás',
+  'Compará la yerba Playadito de 500 g con Día y Changomás',
+  '¿Qué gaseosas Coca-Cola vende Ragnar?',
+  '¿Qué se concluyó sobre la yerba en investigaciones anteriores?',
 ]
 
 const NOMBRES_HERRAMIENTAS = {
+  consultar_catalogo: 'Consulta del catálogo de Ragnar',
   buscar_productos_competencia: 'Búsqueda en competencia',
+  obtener_precio_competidor: 'Precio del competidor',
   verificar_coincidencia: 'Verificación de coincidencia',
   comparar_precios: 'Comparación de precios',
   detectar_promocion: 'Detección de promoción',
+  registrar_resultado: 'Registro de resultado',
+  reiniciar_investigacion: 'Nueva investigación',
+  generar_informe: 'Generación de informe',
+  guardar_investigacion: 'Guardado en el historial',
+  consultar_investigaciones: 'Consulta del historial',
 }
 
 function Mensaje({ mensaje }) {
@@ -115,7 +123,7 @@ export default function App() {
         {mensajes.length === 0 && (
           <div className="vacio">
             <h2>¿Qué producto querés comparar?</h2>
-            <p>Busco precios en Carrefour, Jumbo, Disco, Vea, Día y Changomás.</p>
+            <p>Busco precios en Jumbo, Disco, Vea, Día y Changomás.</p>
             <div className="sugerencias">
               {SUGERENCIAS.map((s) => (
                 <button key={s} onClick={() => enviar(s)}>
