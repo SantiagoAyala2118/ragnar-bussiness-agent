@@ -2,7 +2,7 @@
 API que expone el agente de Ragnar para el frontend.
 
 Ejecutar desde la raíz del proyecto:
-    uvicorn backend.main:app --reload --port 8000
+    uvicorn backend.main:app --reload --port 8080
 
 O con el módulo:
     python -m backend

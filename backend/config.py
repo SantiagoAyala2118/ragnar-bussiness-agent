@@ -28,12 +28,12 @@ class Settings(BaseSettings):
 
     # --- Servidor ---
     host: str = "127.0.0.1"
-    port: int = 8000
+    port: int = 8080  # 8000 queda libre para adk web
 
     # --- CORS (orígenes del frontend) ---
     allowed_origins: list[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
     ]
 
     # --- Agente ---

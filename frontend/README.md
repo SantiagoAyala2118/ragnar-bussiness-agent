@@ -14,7 +14,7 @@ Terminal 1, backend (desde la raíz del repo):
 
 ```powershell
 env\Scripts\activate
-uvicorn backend.main:app --reload --port 8000
+uvicorn backend.main:app --reload --port 8080
 ```
 
 Terminal 2, frontend:
@@ -25,7 +25,9 @@ npm install
 npm run dev
 ```
 
-Abrir http://localhost:5173. Vite redirige `/api/*` a `http://localhost:8000`.
+Abrir http://localhost:3000. Vite redirige `/api/*` a `http://localhost:8080`.
+
+Puertos: frontend `3000`, backend `8080` y `adk web` `8000`, así pueden correr los tres a la vez.
 
 ## API del backend
 
